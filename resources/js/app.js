@@ -4,9 +4,10 @@ import VueRouter from 'vue-router';
 Vue.use(VueRouter)
 
 import App from './App.vue'
-import Hello from './components/Hello.vue'
+import Rankings from './components/Rankings.vue'
 import Home from './components/Home.vue'
 import EventsIndex from './components/EventsIndex.vue'
+import Event from './components/Event.vue'
 
 const router = new VueRouter({
     mode: 'history',
@@ -17,14 +18,19 @@ const router = new VueRouter({
             component: Home
         },
         {
-            path: '/hello',
-            name: 'hello',
-            component: Hello
+            path: '/Rankings',
+            name: 'Rankings',
+            component: Rankings
         },        
         {
             path: '/events',
             name: 'events.index',
             component: EventsIndex
+        },        
+        {
+            path: '/event',
+            name: 'event.index',
+            component: Event
         },        
     ],
 });
