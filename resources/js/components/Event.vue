@@ -144,7 +144,6 @@ import { format, fromUnixTime } from 'date-fns';
         },
         created() {
             this.id = this.$route.params.id;
-            // this.totalParticipants = this.$route.params.totalParticipants;
             this.fetchData();
         },
         methods: {
@@ -160,45 +159,6 @@ import { format, fromUnixTime } from 'date-fns';
                     });
                 this.loading = false;
             },
-            // fetchData() {
-            //     let morePagesAvailable = true;
-            //     let currentPage = 0;
-            //     let allData = [];
-            //     while(morePagesAvailable) {
-            //         this.loading = true;
-            //         currentPage++;
-                    
-            //         axios
-            //         .get(`/api/event/${this.id}`)
-            //         .then(res => {
-            //             debugger;
-            //             console.log(res.data.tournament);
-            //             data = res.data.data.tournament;
-            //             data.forEach(e => allData.unshift(e));
-            //             morePagesAvailable = currentPage < 2;
-            //         });
-            //     }
-            //     this.loading = false;
-            // },
-            // fetchData() {
-            //     let morePagesAvailable = true;
-            //     let currentPage = 0;
-            //     while(this.morePagesAvailable) {
-            //         this.loading = true;
-            //         currentPage++;
-            //         const response = axios
-            //         .get(`/api/event/${this.id}`, {
-            //             currentPage
-            //         })
-            //         .then(res => {
-            //             debugger;
-            //             console.log(res.data.tournament);
-            //             data = res.data.data.tournament;
-            //             data.forEach(e => this.data.unshift(e));
-            //             morePagesAvailable = currentPage < total_pages;
-            //         });
-            //     }
-            // },
             doFormatting(date) {
                 var result = fromUnixTime(date);
                 result = format(result, 'MM/dd/yyyy');

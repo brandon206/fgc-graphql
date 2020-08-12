@@ -2101,8 +2101,7 @@ __webpack_require__.r(__webpack_exports__);
     console.log('Component mounted.');
   },
   created: function created() {
-    this.id = this.$route.params.id; // this.totalParticipants = this.$route.params.totalParticipants;
-
+    this.id = this.$route.params.id;
     this.fetchData();
   },
   methods: {
@@ -2118,44 +2117,6 @@ __webpack_require__.r(__webpack_exports__);
       });
       this.loading = false;
     },
-    // fetchData() {
-    //     let morePagesAvailable = true;
-    //     let currentPage = 0;
-    //     let allData = [];
-    //     while(morePagesAvailable) {
-    //         this.loading = true;
-    //         currentPage++;
-    //         axios
-    //         .get(`/api/event/${this.id}`)
-    //         .then(res => {
-    //             debugger;
-    //             console.log(res.data.tournament);
-    //             data = res.data.data.tournament;
-    //             data.forEach(e => allData.unshift(e));
-    //             morePagesAvailable = currentPage < 2;
-    //         });
-    //     }
-    //     this.loading = false;
-    // },
-    // fetchData() {
-    //     let morePagesAvailable = true;
-    //     let currentPage = 0;
-    //     while(this.morePagesAvailable) {
-    //         this.loading = true;
-    //         currentPage++;
-    //         const response = axios
-    //         .get(`/api/event/${this.id}`, {
-    //             currentPage
-    //         })
-    //         .then(res => {
-    //             debugger;
-    //             console.log(res.data.tournament);
-    //             data = res.data.data.tournament;
-    //             data.forEach(e => this.data.unshift(e));
-    //             morePagesAvailable = currentPage < total_pages;
-    //         });
-    //     }
-    // },
     doFormatting: function doFormatting(date) {
       var result = Object(date_fns__WEBPACK_IMPORTED_MODULE_1__["fromUnixTime"])(date);
       result = Object(date_fns__WEBPACK_IMPORTED_MODULE_1__["format"])(result, 'MM/dd/yyyy');
@@ -2288,7 +2249,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2311,15 +2271,20 @@ __webpack_require__.r(__webpack_exports__);
       this.loading = true;
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.get('/api/events').then(function (res) {
         _this.loading = false;
-        _this.events = res.data.data.tournaments.nodes;
         debugger;
+        _this.events = res.data;
         console.log(_this.events);
 
-        if (_this.events[0].images.length === 0) {
-          _this.events[0].images = [{
-            url: 'http://placehold.jp/224x224.png'
-          }];
-        }
+        _this.events.forEach(function (event) {
+          if (event.images.length === 0) {
+            event.images = [{
+              url: 'http://placehold.jp/224x224.png'
+            }];
+          }
+        }); // if(this.events[0].images.length === 0) {
+        //     this.events[0].images = [{ url: 'http://placehold.jp/224x224.png' }];
+        // }
+
       });
     },
     doFormatting: function doFormatting(date) {
@@ -21536,24 +21501,26 @@ var render = function() {
                       "div",
                       { key: event.id, staticClass: "px-4 md:px-0 mt-8" },
                       [
-                        _c(
-                          "router-link",
-                          {
-                            attrs: {
-                              to: {
-                                name: "event.show",
-                                params: { id: event.id }
-                              }
-                            }
-                          },
-                          [
-                            _c("img", {
-                              staticClass:
-                                "hover:opacity-75 transition ease-in-out duration-150",
-                              attrs: { src: event.images[0].url, alt: "" }
-                            })
-                          ]
-                        ),
+                        event.images
+                          ? _c(
+                              "router-link",
+                              {
+                                attrs: {
+                                  to: {
+                                    name: "event.show",
+                                    params: { id: event.id }
+                                  }
+                                }
+                              },
+                              [
+                                _c("img", {
+                                  staticClass:
+                                    "hover:opacity-75 transition ease-in-out duration-150",
+                                  attrs: { src: event.images[0].url, alt: "" }
+                                })
+                              ]
+                            )
+                          : _vm._e(),
                         _vm._v(" "),
                         event.images.length !== 0
                           ? _c(
