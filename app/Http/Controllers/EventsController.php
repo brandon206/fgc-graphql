@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Input;
+
 
 class EventsController extends Controller
 {
@@ -45,6 +47,12 @@ class EventsController extends Controller
                   id
                   name
                   countryCode
+                  venueName
+                  venueAddress
+                  state
+                  startAt
+                  registrationClosesAt
+                  numAttendees
                   slug
                   images {
                     url
@@ -261,12 +269,285 @@ class EventsController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
+     * @param int $currentPage
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        //
+        // dd(\Request::query());
+        // dd($totalParticipants);
+        // dd($request->all());
+        // dd($request->input('ID'));
+        // if(empty($data)) {
+        //     $data = json_decode($request->getContent());
+        //     $data = json_decode($data);
+        
+        //     if(is_null($data)) {
+        //         return response()->json("Not valid json", 400);
+        //     }
+        // }
+        $client = new Client();
+        // dd($id);
+        // dd($request->get('currentPage'));
+        // $res = $client->request('GET', 'http://ddragon.leagueoflegends.com/cdn/9.23.1/data/en_US/champion.json');
+        // $body = $res->getBody()->getContents();
+        // return $body;
+        $eventId= 78790;
+        $perPage = 10;
+        $page = 1;
+
+        $afterDate = 1577923043;
+        $state = 'CA';
+        $cCode = "NA";
+        $name = 'WNF2020 X Orange County Episode 10';
+
+        $graphQLendpoint = 'https://api.smash.gg/gql/alpha';
+
+
+        // WORKING API CALL FOR Tournaments by Location
+        // https://smashgg-developer-portal.netlify.app/docs/examples/queries/tournaments-by-location
+
+        $query = <<<GQL
+        query {
+            tournament(
+                id: $id
+            ) {
+                venueAddress,
+                startAt,
+                endAt,
+                addrState,
+                images {
+                    url
+                },
+                name,
+                links{
+                    discord,
+                    facebook
+                },
+                owner{
+                    name,
+                    bio
+                },
+                primaryContact,
+                participants(query: {
+                    perPage: 20,
+                }) {
+                    pageInfo {
+                        total,
+                        totalPages,
+                        page,
+                        perPage
+                    }
+                    nodes {
+                        gamerTag,
+                        checkedIn,
+                        images{
+                            url,
+                            type
+                        },
+                        entrants{
+                            event {
+                                name
+                            }
+                            skill,
+                            participants{
+                                gamerTag
+                            },
+                            seeds{
+                                seedNum
+                            },
+                            standing{
+                                placement
+                            }
+                        },
+                        verified
+                    }
+                },
+                rules,
+                streams{
+                    id,
+                    enabled,
+                    followerCount,
+                    isOnline,
+                    numSetups,
+                    parentStreamId,
+                    streamGame,
+                    streamName
+                }
+            }
+        }
+        GQL;
+
+        // owner,
+        // participants,
+        // primaryContact,
+        // rules,
+        // streams
+
+        $res = $client->request(
+        'POST',
+        $graphQLendpoint,
+        [
+            'json' => [
+                'query' => $query,
+                'variables' => [
+                    'id' => $id,
+                ],
+                'operationName' => null
+            ],
+            'headers' => [
+                'Authorization' => 'Bearer ' . env('SMASH_GG_TOKEN'),
+                'Content-Type' => 'application/x-www-form-urlencoded'
+            ]
+        ]);
+        // dd($obj);
+
+        // dd($res->getBody()->getContents());
+
+        return $res->getBody()->getContents();
     }
+
+        /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @param int $currentPage
+     * @return \Illuminate\Http\Response
+     */
+    public function getEventData(Request $request, $id, $totalParticipants)
+    {
+        // dd(\Request::query());
+        dd($request->all());
+        // dd($request->input('ID'));
+        // if(empty($data)) {
+        //     $data = json_decode($request->getContent());
+        //     $data = json_decode($data);
+        
+        //     if(is_null($data)) {
+        //         return response()->json("Not valid json", 400);
+        //     }
+        // }
+        $client = new Client();
+        // dd($id);
+        // dd($request->get('currentPage'));
+        // $res = $client->request('GET', 'http://ddragon.leagueoflegends.com/cdn/9.23.1/data/en_US/champion.json');
+        // $body = $res->getBody()->getContents();
+        // return $body;
+        $eventId= 78790;
+        $perPage = 10;
+        $page = 1;
+
+        $afterDate = 1577923043;
+        $state = 'CA';
+        $cCode = "NA";
+        $name = 'WNF2020 X Orange County Episode 10';
+
+        $graphQLendpoint = 'https://api.smash.gg/gql/alpha';
+
+
+        // WORKING API CALL FOR Tournaments by Location
+        // https://smashgg-developer-portal.netlify.app/docs/examples/queries/tournaments-by-location
+
+        $query = <<<GQL
+        query {
+            tournament(
+                id: $id
+            ) {
+                venueAddress,
+                startAt,
+                endAt,
+                addrState,
+                images {
+                    url
+                },
+                name,
+                links{
+                    discord,
+                    facebook
+                },
+                owner{
+                    name,
+                    bio
+                },
+                primaryContact,
+                participants(query: {
+                    perPage: 20,
+                }) {
+                    pageInfo {
+                        total,
+                        totalPages,
+                        page,
+                        perPage
+                    }
+                    nodes {
+                        gamerTag,
+                        checkedIn,
+                        images{
+                            url,
+                            type
+                        },
+                        entrants{
+                            event {
+                                name
+                            }
+                            skill,
+                            participants{
+                                gamerTag
+                            },
+                            seeds{
+                                seedNum
+                            },
+                            standing{
+                                placement
+                            }
+                        },
+                        verified
+                    }
+                },
+                rules,
+                streams{
+                    id,
+                    enabled,
+                    followerCount,
+                    isOnline,
+                    numSetups,
+                    parentStreamId,
+                    streamGame,
+                    streamName
+                }
+            }
+        }
+        GQL;
+
+        // owner,
+        // participants,
+        // primaryContact,
+        // rules,
+        // streams
+
+        $res = $client->request(
+        'POST',
+        $graphQLendpoint,
+        [
+            'json' => [
+                'query' => $query,
+                'variables' => [
+                    'id' => $id,
+                ],
+                'operationName' => null
+            ],
+            'headers' => [
+                'Authorization' => 'Bearer ' . env('SMASH_GG_TOKEN'),
+                'Content-Type' => 'application/x-www-form-urlencoded'
+            ]
+        ]);
+        // dd($obj);
+
+        dd($res->getBody()->getContents());
+
+        return $res->getBody()->getContents();
+    }
+    
 
     /**
      * Update the specified resource in storage.
