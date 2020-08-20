@@ -47,7 +47,7 @@ import axios from 'axios';
                 .then(res => {
                     this.loading = false;
                     this.events = res.data.data.tournaments.nodes;
-                    // debugger;
+                    debugger;
                     // console.log(event.images[0].url);
                     if(this.events[0].images.length === 0) {
                         console.log("don't have any images");

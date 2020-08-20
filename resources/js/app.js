@@ -28,8 +28,8 @@ const router = new VueRouter({
             component: EventsIndex
         },        
         {
-            path: '/event',
-            name: 'event.index',
+            path: '/event/:id',
+            name: 'event.show',
             component: Event
         },        
     ],

@@ -24,6 +24,7 @@
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
+        "date-fns": "^2.15.0",
         "tailwindcss": "^1.4.6",
         "vue-router": "^3.3.2"
     }

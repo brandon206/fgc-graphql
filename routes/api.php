@@ -17,4 +17,6 @@ use Illuminate\Http\Request;
 //     return $request->user();
 // });
 
-Route::get("events", "EventsController@index");
+Route::get("/", "EventsController@index");
+Route::get("/events", "EventsController@index");
+Route::get("event/{id}", "EventsController@show");
