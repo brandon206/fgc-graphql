@@ -9,7 +9,7 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
                                 <div v-for="event in events" :key="event.id" class="px-4 md:px-0 mt-8">
                                     <router-link v-if="event.images" :to="{ name: 'event.show', params: {id: event.id} }">
-                                        <img :src="event.images[0].url" alt="" class="hover:opacity-75 transition ease-in-out duration-150">
+                                        <img :src="event.images[0].url" alt="" class="hover:opacity-75 transition ease-in-out duration-150" style="min-height: 224px;">
                                     </router-link>
                                     <div class="mt-4" style="max-height=200px;" v-if="event.images.length !== 0">
                                         <a :href="event.slug" class="text-lg hover:text-gray:300">{{ event.name }}</a>
@@ -65,7 +65,8 @@ import { format, fromUnixTime } from 'date-fns';
                     console.log(this.events);
                     this.events.forEach(event => {
                         if(event.images.length === 0) {
-                            event.images = [{ url: 'http://placehold.jp/224x224.png' }];
+                            // event.images = [{ url: 'http://placehold.jp/224x224.png' }];
+                            event.images = [{ url: '../../images/no-image.png' }];
                         }
                     });
                     // if(this.events[0].images.length === 0) {

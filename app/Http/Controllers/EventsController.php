@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Input;
+use DateTime;
 
 
 class EventsController extends Controller
@@ -24,7 +25,10 @@ class EventsController extends Controller
         $perPage = 10;
         $page = 1;
 
-        $afterDate = 1597208615;
+        $date = new DateTime();
+        $afterDate = $date->getTimestamp();
+
+        // $afterDate = 1597208615;
         $state = 'CA';
         $cCode = "NA";
         $name = 'WNF2020 X Orange County Episode 10';
@@ -469,6 +473,18 @@ class EventsController extends Controller
                 startAt,
                 endAt,
                 addrState,
+                events {
+                    id,
+                    name,
+                    matchRulesMarkdown,
+                    prizingInfo,
+                    rulesMarkdown,
+                    videogame {
+                        images {
+                            url
+                        }
+                    },
+                },
                 images {
                     url
                 },
@@ -537,27 +553,117 @@ class EventsController extends Controller
         // rules,
         // streams
 
-        $res = $client->request(
-        'POST',
-        $graphQLendpoint,
-        [
-            'json' => [
-                'query' => $query,
-                'variables' => [
-                    'id' => $id,
-                ],
-                'operationName' => null
-            ],
-            'headers' => [
-                'Authorization' => 'Bearer ' . env('SMASH_GG_TOKEN'),
-                'Content-Type' => 'application/x-www-form-urlencoded'
-            ]
-        ]);
+        // $res = $client->request(
+        // 'POST',
+        // $graphQLendpoint,
+        // [
+        //     'json' => [
+        //         'query' => $query,
+        //         'variables' => [
+        //             'id' => $id,
+        //         ],
+        //         'operationName' => null
+        //     ],
+        //     'headers' => [
+        //         'Authorization' => 'Bearer ' . env('SMASH_GG_TOKEN'),
+        //         'Content-Type' => 'application/x-www-form-urlencoded'
+        //     ]
+        // ]);
         // dd($obj);
 
-        // dd($res->getBody()->getContents());
-
-        return $res->getBody()->getContents();
+        $res = $client->request(
+            'POST',
+            $graphQLendpoint,
+            [
+                'json' => [
+                    'query' => $query,
+                    'variables' => [
+                        'page' => $page,
+                        'perPage' => $perPage,
+                    ],
+                    'operationName' => null
+                ],
+                'headers' => [
+                    'Authorization' => 'Bearer ' . env('SMASH_GG_TOKEN'),
+                    'Content-Type' => 'application/json'
+                ]
+            ]);
+            $json = $res->getBody()->getContents();
+            // dd($json);
+            $array = json_decode($json);
+            // dd($array);
+            
+            $totalPages = $array->data->tournament->participants->pageInfo->totalPages;
+            $totalParticipants = [];
+            for ($page; $page <= $totalPages; $page++) { 
+                $query = <<<GQL
+                query {
+                    tournament(
+                        id: $id
+                    ) {
+                        participants(query: {
+                            perPage: 20,
+                            page: $page,
+                        }) {
+                            pageInfo {
+                                total,
+                                totalPages,
+                                page,
+                                perPage
+                            }
+                            nodes {
+                                gamerTag,
+                                checkedIn,
+                                images{
+                                    url,
+                                    type
+                                },
+                                entrants{
+                                    event {
+                                        name
+                                    }
+                                    skill,
+                                    participants{
+                                        gamerTag
+                                    },
+                                    seeds{
+                                        seedNum
+                                    },
+                                    standing{
+                                        placement
+                                    }
+                                },
+                                verified
+                            }
+                        },
+                    }
+                }
+                GQL;
+                $res = $client->request(
+                    'POST',
+                    $graphQLendpoint,
+                    [
+                        'json' => [
+                            'query' => $query,
+                            'variables' => [
+                                'id' => $id,
+                            ],
+                            'operationName' => null
+                        ],
+                        'headers' => [
+                            'Authorization' => 'Bearer ' . env('SMASH_GG_TOKEN'),
+                            'Content-Type' => 'application/json'
+                        ]
+                    ]);
+                $json = $res->getBody()->getContents();
+                $participants_array = json_decode($json);
+                // dd($array);
+                array_push($totalParticipants, $participants_array->data->tournament->participants->nodes);
+            }
+            $totalParticipants = array_merge(...$totalParticipants);
+            $array->data->tournament->participants->nodes = $totalParticipants;
+        // dd($array);
+        return json_encode($array);
     }
 
     /**

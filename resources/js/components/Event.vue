@@ -44,38 +44,34 @@
                         <p>Organizer: {{ data.owner.name }}</p>
                         <p v-if="data.owner.bio">Bio: {{ data.owner.bio }}</p>
                     </div>
-                    <p class="text-gray-300 mt-8">Rules: {{ data.rules }}</p>
-                    <div class="mt-12">
-                        <h4 class="text-white font-semibold">
-                            Featured Commentators
-                        </h4>
-                        <div class="flex mt-4">
-                            <div>
-                                <div>Mr. Aquaman</div>
-                                <div class="text-sm text-gray-400">
-                                    Color Caster, Play-by-Play
-                                </div>
-                            </div>
-                            <div class="ml-8">
-                                <div>Samoy</div>
-                                <div class="text-sm text-gray-400">
-                                    Color Caster
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-12">
-                        <button
-                            class="flex.items-center.bg-orange-500.text-gray-900.rounded.font-semibold.px-5.py-4.hover:bg-orange-600 transition ease-in-out duration-150"
-                        >
-                            <span>Register for Event</span>
-                        </button>
+                </div>
+            </div>
+            <div class="mt-12">
+                <div>Rules</div>
+                <p class="text-gray-300 mt-8" v-for="(paragraph,index) in formattedRules" :key="index">{{ paragraph }}</p>
+            </div>
+            <h4 class="mt-12 text-white font-semibold">
+                Events
+            </h4>
+            <div class="grid grid-cols-3 gap-4">
+                <div 
+                    v-for="event in data.events"
+                    :key="event.id"
+                >
+                    <div>
+                        <!-- create a computed prop to handle filteredMainEvents vs. filteredExtraEvents -->
+                        <div>{{ event.name }}</div>
+                        <div>{{ event.videogame.name }}</div>
+                        <img class="w-32" :src="event.videogame.images[0].url" alt="">
+                        <!-- <div class="text-sm text-gray-400">
+                            Color Caster, Play-by-Play
+                        </div> -->
                     </div>
                 </div>
             </div>
             <div class="entrants border-b border-b border-gray-800">
                 <div class="container mx-auto px-4 py-16">
-                    <h2 class="text-4xl font-semibold">Entrants</h2>
+                    <h2 v-if="data.participants" class="text-4xl font-semibold">Entrants ({{ data.participants.pageInfo.total }})</h2>
                     <div
                         v-if="data.participants"
                         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8"
@@ -145,6 +141,18 @@ import { format, fromUnixTime } from 'date-fns';
         created() {
             this.id = this.$route.params.id;
             this.fetchData();
+        },
+        computed: {
+            formattedRules() {
+                debugger;
+                if (this.data.length !== 0) {
+                    const arr = this.data.rules.split("\n\n");
+                    const newArr = arr.map((rule) => {
+                        return rule.replace("###","");
+                    });
+                    return newArr;
+                }
+            },
         },
         methods: {
             fetchData() {

@@ -2082,10 +2082,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2103,6 +2099,19 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     this.id = this.$route.params.id;
     this.fetchData();
+  },
+  computed: {
+    formattedRules: function formattedRules() {
+      debugger;
+
+      if (this.data.length !== 0) {
+        var arr = this.data.rules.split("\n\n");
+        var newArr = arr.map(function (rule) {
+          return rule.replace("###", "");
+        });
+        return newArr;
+      }
+    }
   },
   methods: {
     fetchData: function fetchData() {
@@ -2277,8 +2286,9 @@ __webpack_require__.r(__webpack_exports__);
 
         _this.events.forEach(function (event) {
           if (event.images.length === 0) {
+            // event.images = [{ url: 'http://placehold.jp/224x224.png' }];
             event.images = [{
-              url: 'http://placehold.jp/224x224.png'
+              url: '../../images/no-image.png'
             }];
           }
         }); // if(this.events[0].images.length === 0) {
@@ -21179,17 +21189,50 @@ var render = function() {
                           ])
                         : _vm._e()
                     ])
-                  : _vm._e(),
-                _vm._v(" "),
-                _c("p", { staticClass: "text-gray-300 mt-8" }, [
-                  _vm._v("Rules: " + _vm._s(_vm.data.rules))
-                ]),
-                _vm._v(" "),
-                _vm._m(0),
-                _vm._v(" "),
-                _vm._m(1)
+                  : _vm._e()
               ])
             ]
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "mt-12" },
+            [
+              _c("div", [_vm._v("Rules")]),
+              _vm._v(" "),
+              _vm._l(_vm.formattedRules, function(paragraph, index) {
+                return _c(
+                  "p",
+                  { key: index, staticClass: "text-gray-300 mt-8" },
+                  [_vm._v(_vm._s(paragraph))]
+                )
+              })
+            ],
+            2
+          ),
+          _vm._v(" "),
+          _c("h4", { staticClass: "mt-12 text-white font-semibold" }, [
+            _vm._v("\n            Events\n        ")
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "grid grid-cols-3 gap-4" },
+            _vm._l(_vm.data.events, function(event) {
+              return _c("div", { key: event.id }, [
+                _c("div", [
+                  _c("div", [_vm._v(_vm._s(event.name))]),
+                  _vm._v(" "),
+                  _c("div", [_vm._v(_vm._s(event.videogame.name))]),
+                  _vm._v(" "),
+                  _c("img", {
+                    staticClass: "w-32",
+                    attrs: { src: event.videogame.images[0].url, alt: "" }
+                  })
+                ])
+              ])
+            }),
+            0
           ),
           _vm._v(" "),
           _c(
@@ -21197,9 +21240,15 @@ var render = function() {
             { staticClass: "entrants border-b border-b border-gray-800" },
             [
               _c("div", { staticClass: "container mx-auto px-4 py-16" }, [
-                _c("h2", { staticClass: "text-4xl font-semibold" }, [
-                  _vm._v("Entrants")
-                ]),
+                _vm.data.participants
+                  ? _c("h2", { staticClass: "text-4xl font-semibold" }, [
+                      _vm._v(
+                        "Entrants (" +
+                          _vm._s(_vm.data.participants.pageInfo.total) +
+                          ")"
+                      )
+                    ])
+                  : _vm._e(),
                 _vm._v(" "),
                 _vm.data.participants
                   ? _c(
@@ -21336,57 +21385,7 @@ var render = function() {
         ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "mt-12" }, [
-      _c("h4", { staticClass: "text-white font-semibold" }, [
-        _vm._v(
-          "\n                        Featured Commentators\n                    "
-        )
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "flex mt-4" }, [
-        _c("div", [
-          _c("div", [_vm._v("Mr. Aquaman")]),
-          _vm._v(" "),
-          _c("div", { staticClass: "text-sm text-gray-400" }, [
-            _vm._v(
-              "\n                                Color Caster, Play-by-Play\n                            "
-            )
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "ml-8" }, [
-          _c("div", [_vm._v("Samoy")]),
-          _vm._v(" "),
-          _c("div", { staticClass: "text-sm text-gray-400" }, [
-            _vm._v(
-              "\n                                Color Caster\n                            "
-            )
-          ])
-        ])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "mt-12" }, [
-      _c(
-        "button",
-        {
-          staticClass:
-            "flex.items-center.bg-orange-500.text-gray-900.rounded.font-semibold.px-5.py-4.hover:bg-orange-600 transition ease-in-out duration-150"
-        },
-        [_c("span", [_vm._v("Register for Event")])]
-      )
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -21516,6 +21515,7 @@ var render = function() {
                                 _c("img", {
                                   staticClass:
                                     "hover:opacity-75 transition ease-in-out duration-150",
+                                  staticStyle: { "min-height": "224px" },
                                   attrs: { src: event.images[0].url, alt: "" }
                                 })
                               ]
